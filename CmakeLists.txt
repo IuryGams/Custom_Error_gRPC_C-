@@ -1,0 +1,108 @@
+cmake_minimum_required(VERSION 3.21)
+
+file(TIMESTAMP "${CMAKE_CURRENT_LIST_DIR}/vcpkg.json" vcpkg_json_timestamp)
+
+if(VCPKG_JSON_TIMESTAMP_PREV STREQUAL vcpkg_json_timestamp)
+    set(VCPKG_MANIFEST_INSTALL OFF CACHE STRING "" FORCE)
+else()
+    set(VCPKG_MANIFEST_INSTALL ON CACHE STRING "" FORCE)
+endif()
+
+# Configurando o Cmake para utilizar as configurações do vcpkg
+set(CMAKE_PREFIX_PATH "C:/Dev/vcpkg/installed/x64-windows")
+set(CMAKE_TOOLCHAIN_FILE "C:/Dev/vcpkg/scripts/buildsystems/vcpkg.cmake")
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD 17)
+
+PROJECT(
+    HXD
+    
+    LANGUAGES CXX
+)
+
+include_directories(${GTEST_INCLUDE_DIRS})
+
+set(VCPKG_JSON_TIMESTAMP_PREV "${vcpkg_json_timestamp}" CACHE STRING "" FORCE)       
+set(nlohmann-json_IMPLICIT_CONVERSIONS OFF)
+
+add_subdirectory(tests)
+add_subdirectory(proto)
+
+file(GLOB FILES_CPP source/*.cpp)
+file(GLOB SERVICES_FILES_CPP ./source/services/*.cpp)
+
+add_library(
+    ${PROJECT_NAME}_lib
+
+    ./server/server.cpp
+    ${FILES_CPP}
+    ${SERVICES_FILES_CPP}
+)
+
+add_executable(
+    ${PROJECT_NAME}
+
+    ./main.cpp
+)
+
+target_include_directories(
+    ${PROJECT_NAME}_lib
+
+    PUBLIC
+        ./include
+        ./include/services
+        ./server
+        ${CMAKE_CURRENT_BINARY_DIR}/proto
+)
+
+target_compile_features(
+    ${PROJECT_NAME}_lib
+
+    PUBLIC
+        cxx_std_20
+)
+
+target_link_libraries(
+    ${PROJECT_NAME}_lib
+
+    PUBLIC
+        protolib
+)
+
+target_link_libraries(
+    ${PROJECT_NAME}
+
+    PUBLIC
+        ${PROJECT_NAME}_lib
+)
+
+
+# --------------------------------------------------------------------------------------------------#
+# LIST OF COMANDS  
+
+# ----- COMAND FOR GENERATE COVERAGE -----
+
+# Defina o caminho para os arquivos fonte e o executável de teste
+
+# set(COVERAGE_DIR "C:\\Dev\\Iury\\PROJECT_INTEGRATION\\coverage")
+# set(OpenCppCoverage "C:\\Program Files\\OpenCppCoverage\\OpenCppCoverage.exe")
+# set(SOURCES_DIR "C:\\Dev\\Iury\\PROJECT_INTEGRATION\\source") # Arquivos .cpp dentro de source
+# set(COVERAGE_OUTPUT_DIR "${CMAKE_SOURCE_DIR}\\coverage") # Caminho para a pasta do Coverage
+# set(TEST_EXECUTABLE_PATH "C:\\Dev\\Iury\\PROJECT_INTEGRATION\\build\\tests\\PROJECT_INTEGRATIONTests.exe") # Caminho para o executavel de testes
+
+# file(MAKE_DIRECTORY ${COVERAGE_OUTPUT_DIR}) # Criando a pasta coverage se não existir
+
+
+# # Comando personalizado para executar OpenCppCoverage
+# add_custom_target(coverage
+#     COMMAND rmdir /S /Q ${COVERAGE_DIR}
+#     COMMAND ${OpenCppCoverage} 
+#         --sources=${SOURCES_DIR}
+#         --export_type=html:${COVERAGE_OUTPUT_DIR}
+#         -- ${TEST_EXECUTABLE_PATH}
+#     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+# )
+
+# # Adicione dependências, garantindo que o executável de teste seja construído antes de rodar a cobertura
+# add_dependencies(coverage ${PROJECT_NAME}Tests)
