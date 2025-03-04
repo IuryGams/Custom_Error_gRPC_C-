@@ -38,6 +38,7 @@ add_library(
     ./server/server.cpp
     ${FILES_CPP}
     ${SERVICES_FILES_CPP}
+    # ./source/pantheon.cpp
 )
 
 add_executable(
