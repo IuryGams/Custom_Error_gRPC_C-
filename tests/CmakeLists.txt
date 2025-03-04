@@ -2,7 +2,7 @@
 add_executable(
     ${PROJECT_NAME}Tests
     
-    custom_errors_test.cpp
+    custom_exceptions_test.cpp
     main.cpp
 )
 

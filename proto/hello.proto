@@ -1,15 +1,25 @@
 syntax = "proto3";
 
-service HelloService {
-    rpc HelloWorld (HelloRequest) returns (HelloResponse);
+service HelloService { rpc HelloWorld(HelloRequest) returns (HelloResponse); }
+
+message ErrorDetails {
+  
+  string error_code = 1;        // Código do erro (ex: "INVALID_ARGUMENT")
+  string message = 2;           // Mensagem descritiva do erro
+  optional string technical_message = 3; // Mensagem técnica detalhada
+  optional string solution = 4;          // Possível solução para o erro
 }
 
-message HelloRequest
-{
-    string name = 1;
+message PantheonNgExceptionsProto {
+  string meter_type = 1;        // Tipo do medidor (ex: "PANTHEON_NG")
+  ErrorDetails error = 2;       // Detalhes do erro
 }
 
-message HelloResponse
-{
+message HelloRequest { string name = 1; }
+
+message HelloResponse {
+  oneof resp {
     string text = 1;
+    PantheonNgExceptionsProto error_response = 2;
+  }
 }
