@@ -1,4 +1,4 @@
-Creating new customErros with gRPC e C++
+<h2>Creating new customErros with gRPC e C++</h2>
 
 Abstract Class HPP
 ![image](https://github.com/user-attachments/assets/bed6b750-2c06-4065-bd2a-36136f681650)
